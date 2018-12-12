@@ -89,6 +89,8 @@ public class ShiroConfig {
 		Properties mappings = new Properties();
 		mappings.setProperty("DatabaseException", "databaseError");//数据库异常处理
 		mappings.setProperty("UnauthorizedException","403");
+		//出现算术异常后，自动跳转到arithmeticException页面
+		mappings.setProperty("java.lang.ArithmeticException","arithmeticException");
 		r.setExceptionMappings(mappings);  // None by default
 		r.setDefaultErrorView("error");    // No default
 		r.setExceptionAttribute("ex");     // Default is "exception"
