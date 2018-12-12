@@ -15,6 +15,8 @@ public class UserInfoController {
     @RequestMapping("/userList")
     @RequiresPermissions("userInfo:view")//权限管理;
     public String userInfo(){
+        //测试SimpleMappingExceptionResolver中配置的算术异常
+        //int i = 1 / 0;
         return "userInfo";
     }
 
