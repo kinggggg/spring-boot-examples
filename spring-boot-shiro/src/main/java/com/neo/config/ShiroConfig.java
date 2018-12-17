@@ -1,10 +1,14 @@
 package com.neo.config;
 
+import com.neo.dao.RedisSessionDao;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
@@ -15,6 +19,13 @@ import java.util.Properties;
 
 @Configuration
 public class ShiroConfig {
+
+	@Autowired
+	RedisSessionDao sessionDao;
+
+	@Autowired
+	RedisCacheManager redisCacheManager;
+
 	@Bean
 	public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
 		System.out.println("ShiroConfiguration.shirFilter()");
@@ -38,6 +49,15 @@ public class ShiroConfig {
 		shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 		shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 		return shiroFilterFactoryBean;
+	}
+
+	@Bean
+	public SessionManager sessionManager() {
+		DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+		sessionManager.setSessionDAO(sessionDao);
+//        sessionManager.setGlobalSessionTimeout(1800);
+//        SecurityUtils.getSubject().getSession().setTimeout(-1000l);
+		return sessionManager;
 	}
 
 	/**
@@ -66,6 +86,8 @@ public class ShiroConfig {
 	public SecurityManager securityManager(){
 		DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
 		securityManager.setRealm(myShiroRealm());
+		securityManager.setSessionManager(sessionManager());
+		securityManager.setCacheManager(redisCacheManager);// 换成Redis的缓存管理器
 		return securityManager;
 	}
 
