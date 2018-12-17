@@ -51,11 +51,6 @@ public class CacheConfig extends CachingConfigurerSupport {
         return factory;
     }
 
-    /*@Bean(name = "springSessionDefaultRedisSerializer")
-    public GenericJackson2JsonRedisSerializer getGenericJackson2JsonRedisSerializer() {
-        return new GenericJackson2JsonRedisSerializer();
-    }*/
-
     /**
      * 配置RedisTemplate
      * 设置添加序列化器
@@ -67,30 +62,10 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Bean
     public RedisTemplate<Object, Object> redisTemplate() {
 
-        //StringRedisTemplate的构造方法中默认设置了stringSerializer
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        //set key serializer
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
         template.setKeySerializer(stringRedisSerializer);
         template.setHashKeySerializer(stringRedisSerializer);
-
-        //not work
-        /*Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
-        //set value serializer
-        template.setDefaultSerializer(jackson2JsonRedisSerializer);
-//        template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());*/
-
-        //not work
-//        template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
-
-        //it works
-//        template.setValueSerializer(new JdkSerializationRedisSerializer());
 
         template.setValueSerializer(new RedisObjectSerializer());
 
